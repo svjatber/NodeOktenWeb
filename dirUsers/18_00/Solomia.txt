@@ -1,0 +1,4 @@
+{
+    "name": "Solomia",
+    "gender": "female"
+    }
