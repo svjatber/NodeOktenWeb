@@ -3,7 +3,7 @@ const User = require('../model/user.model')
 
 module.exports = {
     findUsers: async () => {
-        const users = User.getAllUsers()
+        const users = await User.getAllUsers()
         if(!users) {
             throw new Error('not users in db');
         }
@@ -17,15 +17,13 @@ module.exports = {
         return user;
     },
 
-    createUser: async (username,password) => {
-        const user = new User(username, password).createUser()
-        if(user){
-            throw new Error('this user is here yet');
-        }
-
+    createUser: async (username ,password) => {
+        const user = new User(username, password)
+        await user.createUser();
         },
 
     deleteUser: async (userId) => {
-        await User.deleteUser(userId)
+        const users = await User.deleteUser(userId)
+        return users
     }
 }
