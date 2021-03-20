@@ -1,29 +1,11 @@
-const User = require('../model/user.model')
-
+const User = require('../models/User');
 
 module.exports = {
-    findUsers: async () => {
-        const users = await User.getAllUsers()
-        if(!users) {
-            throw new Error('not users in db');
-        }
+    allUsers: () => User.find(),
 
-        return users;
-    },
+    userById: (userId) => User.findById(userId),
 
-    findUserById: async (userId) => {
-        const user = User.findUserById(userId)
-        if(!user) {throw new Error('not user in db');}
-        return user;
-    },
+    createUser: (objUser) => User.create(objUser),
 
-    createUser: async (username ,password) => {
-        const user = new User(username, password)
-        await user.createUser();
-        },
-
-    deleteUser: async (userId) => {
-        const users = await User.deleteUser(userId)
-        return users
-    }
+    deleteUser: (userId) => User.deleteOne({_id: userId})
 }

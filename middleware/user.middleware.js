@@ -1,38 +1,63 @@
-
+const errorMessage = require('../errors/error.messages');
+const errorCodes = require('../constant/errorCodes.enum');
+const userService = require('../service/user.service')
 
 module.exports = {
-    isIdValid: (req, res, next) => {
-        try {
-            const userId = +req.params.userId;
-            if (userId < 0 || !Number.isInteger(userId) || Number.isNaN(userId)) {
-                throw new Error('Error');
+
+    checkIsIdValid:async (req, res, next) =>{
+        try{
+            // const {preferLang = 'en'} = req.body;
+            // const {userId} = req.params;
+            //
+            // // if(+userId < 0 || !Number.isInteger(+userId) || Number.isNaN(+userId)){
+            // //     throw new Error(errorMessage.NOT_VALID_ID[preferLang]);
+            // // }
+
+            next();
+        } catch(e){
+
+            res.status(errorCodes.BAD_REQUEST).json(e.message);
+        }
+    },
+
+    checkIsUserExists: async (req, res, next) =>{
+        try{
+            const {userId} = req.params;
+            const {preferLang = 'en'} = req.body;
+
+            const foundUser = await userService.userById(userId);
+            console.log(foundUser)
+            if (!foundUser) {
+
+                throw new Error(errorMessage.USER_NOT_FOUND[preferLang]);
+            }
+
+            req.user = foundUser;
+
+            next();
+        } catch(e){
+
+            res.status(errorCodes.BAD_REQUEST).json(e.message);
+        }
+    },
+
+    isUserValid:(req,res,next) =>{
+        try{
+            const {name, password,email, preferLang = 'en'} = req.body;
+
+            if(!name || !password || !email){
+                throw new Error(errorMessage.FILES_IS_EMPTY[preferLang]);
+            }
+
+            if(password.length < 6 ){
+                throw new Error(errorMessage.TOO_WEAK_PASSWORD[preferLang]);
             }
 
             next();
         } catch (e) {
-            res.status(400).json(e.message);
-        }
-    },
 
-    isPasswordValid: (req, res, next) => {
-        try {
-            const { password } = req.body;
-            if (!password) {throw new Error('Error');}
-            if (password.length < 8) {throw new Error('Error');}
-
-            next();
-        } catch (e) {
-            res.status(400).json(e.message);
-        }
-    },
-    isUserNameValid: (req, res, next) => {
-        try {
-            const { username } = req.body;
-            if (!username) {throw new Error('Error');}
-            if (username.length < 6) {throw new Error('Error');}
-            next();
-        } catch (e) {
-            res.status(400).json(e.message);
+            res.status(errorCodes.BAD_REQUEST).json(e.message);
         }
     }
 }
+
