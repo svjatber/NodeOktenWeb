@@ -4,7 +4,7 @@ const userMiddleware = require('../middleware/user.middleware');
 
 router.get('/', userController.getUsers);
 
-router.post('/',  userController.createUser);
+router.post('/',  userMiddleware.checkIsIdValid, userController.createUser);
 
 router.get('/:userId', userMiddleware.checkIsIdValid, userMiddleware.checkIsUserExists, userController.getUser);
 

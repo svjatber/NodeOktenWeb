@@ -1,4 +1,5 @@
 const userService = require('../service/user.service')
+const passwordBcrypt = require("../helper/password.helper");
 
 
 module.exports = {
@@ -25,9 +26,10 @@ module.exports = {
 
     createUser: async (req, res) => {
         try {
-            const { username, password} = req.body;
-            await userService.createUser({username,password});
-            res.status(200).json('good');
+            const { email, password} = req.body;
+            const hashPassword = await passwordBcrypt.hash(password)
+            await userService.createUser({email, password: hashPassword});
+            res.status(200).json('USER_CREATED');
         }
         catch (e) {
             res.status(400).json(e.message);
